@@ -15,6 +15,7 @@ interface Props {
   secureTextEntry?: TextInputProps["secureTextEntry"];
   keyboardType?: TextInputProps["keyboardType"];
   autoCapitalize?: TextInputProps["autoCapitalize"];
+  error?: string;
 }
 
 export const CustomTextInput = ({
@@ -25,6 +26,7 @@ export const CustomTextInput = ({
   secureTextEntry,
   keyboardType,
   autoCapitalize,
+  error,
 }: Props) => {
   const [isFocus, setIsFocus] = useState<boolean>(false);
 
@@ -35,7 +37,10 @@ export const CustomTextInput = ({
       </View>
       <TextInput
         placeholder={placeholder}
-        style={[styles.input, isFocus && { borderColor: "deepskyblue" }]}
+        style={[
+          styles.input,
+          isFocus && { borderColor: error ? "red" : "deepskyblue" },
+        ]}
         value={value}
         onChangeText={onChangeText}
         secureTextEntry={secureTextEntry}
@@ -44,6 +49,11 @@ export const CustomTextInput = ({
         keyboardType={keyboardType}
         autoCapitalize={autoCapitalize}
       />
+      {error ? (
+        <View style={styles.errorContainer}>
+          <Text style={styles.error}>{error}</Text>
+        </View>
+      ) : null}
     </>
   );
 };
@@ -58,5 +68,12 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     paddingHorizontal: 16,
     paddingVertical: 8,
+  },
+  errorContainer: {
+    paddingTop: 2,
+    alignItems: "center",
+  },
+  error: {
+    color: "red",
   },
 });

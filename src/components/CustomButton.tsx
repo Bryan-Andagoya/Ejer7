@@ -1,14 +1,28 @@
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  TouchableOpacityProps,
+  ActivityIndicator,
+} from "react-native";
 
 interface Props {
   text: string;
+  onPress?: TouchableOpacityProps["onPress"];
+  loading?: boolean;
 }
 
-export const CustomButton = ({ text }: Props) => {
+export const CustomButton = ({ text, onPress, loading }: Props) => {
   return (
-    <TouchableOpacity style={styles.button}>
-      <Text style={styles.text}>{text}</Text>
+    <TouchableOpacity
+      style={styles.button}
+      onPress={onPress}
+      disabled={loading}
+    >
+      <Text style={styles.text}>
+        {loading ? <ActivityIndicator size="small" color="white" /> : text}
+      </Text>
     </TouchableOpacity>
   );
 };
@@ -22,6 +36,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     elevation: 4,
+    width: "100%",
   },
   text: {
     fontSize: 16,

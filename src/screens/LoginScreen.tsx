@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 
 import { CustomButton, CustomTextInput } from "../components";
+import { useUserStore } from "../hooks";
 import { StackNavigatorParamList } from "../navigation";
 
 interface Props extends StackScreenProps<StackNavigatorParamList, "Login"> {}
@@ -10,9 +11,37 @@ interface Props extends StackScreenProps<StackNavigatorParamList, "Login"> {}
 export const LoginScreen = ({ navigation }: Props) => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [emailError, setEmailError] = useState<string>("");
+  const [passwordError, setPasswordError] = useState<string>("");
+  const { loginUser } = useUserStore();
 
   const goToRegister = () => {
     navigation.push("Register");
+  };
+
+  const login = async () => {
+    if (email && password) {
+      setLoading(true);
+      clearForm();
+      await loginUser(email, password);
+      setLoading(false);
+    } else {
+      if (!email) {
+        setEmailError("Field required");
+      }
+
+      if (!password) {
+        setPasswordError("Field required");
+      }
+    }
+  };
+
+  const clearForm = () => {
+    setEmail("");
+    setEmailError("");
+    setPassword("");
+    setPasswordError("");
   };
 
   return (
@@ -29,6 +58,7 @@ export const LoginScreen = ({ navigation }: Props) => {
             onChangeText={setEmail}
             keyboardType="email-address"
             autoCapitalize="none"
+            error={emailError}
           />
         </View>
         <View style={styles.inputContainer}>
@@ -38,13 +68,17 @@ export const LoginScreen = ({ navigation }: Props) => {
             value={password}
             onChangeText={setPassword}
             secureTextEntry
+            error={passwordError}
           />
         </View>
         <View style={styles.buttonContainer}>
-          <CustomButton text="Login" />
+          <CustomButton text="Login" onPress={login} loading={loading} />
         </View>
         <View style={styles.linkContainer}>
-          <TouchableOpacity onPress={goToRegister}>
+          <TouchableOpacity
+            onPress={loading ? undefined : goToRegister}
+            disabled={loading}
+          >
             <Text style={styles.link}>Create an account</Text>
           </TouchableOpacity>
         </View>
